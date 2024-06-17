@@ -19,4 +19,4 @@ A web application for managing purchase orders with email notifications and repo
 ### Backend
 1. **Navigate to the backend directory**:
    ```sh
-   cd procurement-app-backend
+   cd procurement-app-backend.
