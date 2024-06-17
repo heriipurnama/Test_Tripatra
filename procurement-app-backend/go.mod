@@ -4,7 +4,6 @@ go 1.22.3
 
 require (
 	github.com/99designs/gqlgen v0.17.49
-	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 	go.mongodb.org/mongo-driver v1.15.1
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
@@ -12,6 +11,7 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -20,6 +20,7 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
+	github.com/rs/cors v1.11.0
 	github.com/sosodev/duration v1.3.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

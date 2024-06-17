@@ -61,7 +61,7 @@ func Login(ctx context.Context, email string, password string) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
-	token, err := utils.GenerateJWT(user.UserID)
+	token, err := utils.GenerateToken(user.Email)
 	if err != nil {
 		return "", err
 	}

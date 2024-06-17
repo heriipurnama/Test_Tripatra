@@ -3,42 +3,38 @@ package utils
 import (
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/dgrijalva/jwt-go"
 )
 
 var jwtKey = []byte("your_secret_key")
 
 type Claims struct {
-	UserID string `json:"userId"`
-	jwt.RegisteredClaims
+	Email string `json:"email"`
+	jwt.StandardClaims
 }
 
-func GenerateJWT(userID string) (string, error) {
+func GenerateToken(email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserID: userID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		Email: email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtKey)
 }
 
-func ValidateJWT(tokenString string) (*Claims, error) {
+func ParseToken(tokenStr string) (*Claims, error) {
 	claims := &Claims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	if !token.Valid {
 		return nil, err
 	}
-
 	return claims, nil
 }
