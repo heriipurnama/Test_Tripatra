@@ -1,0 +1,47 @@
+type User {
+  userId: ID!
+  name: String!
+  email: String!
+  role: String!
+}
+
+type PurchaseOrder {
+  orderId: ID!
+  userId: ID!
+  items: [Item!]!
+  totalAmount: Float!
+  createdAt: String!
+}
+
+type Item {
+  itemId: ID!
+  name: String!
+  quantity: Int!
+  price: Float!
+}
+
+type Report {
+  reportId: ID!
+  orderId: ID!
+  generatedAt: String!
+  reportData: String!
+}
+
+type Query {
+  getPurchaseOrders: [PurchaseOrder!]!
+  getReport(orderId: ID!): Report!
+}
+
+type Mutation {
+  createPurchaseOrder(userId: ID!, items: [ItemInput!]!): PurchaseOrder!
+  generateReport(orderId: ID!): Report!
+  register(name: String!, email: String!, password: String!): User!
+  login(email: String!, password: String!): String! # Returns JWT token
+}
+
+input ItemInput {
+  itemId: ID!
+  name: String!
+  quantity: Int!
+  price: Float!
+}

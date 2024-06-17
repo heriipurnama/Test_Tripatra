@@ -1,0 +1,20 @@
+# gqlgen.yml
+
+schema:
+  - graphql/schema.graphql
+
+exec:
+  filename: graphql/generated.go
+  package: graphql
+
+model:
+  filename: models/models_gen.go
+  package: models
+
+resolver:
+  layout: follow-schema
+  dir: graphql
+  package: graphql
+
+autobind:
+  - "procurement-app-backend/models"
