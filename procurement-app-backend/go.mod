@@ -9,6 +9,8 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
+require github.com/jung-kurt/gofpdf v1.16.2 // indirect
+
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -17,6 +19,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
+	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
@@ -30,4 +33,5 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/mail.v2 v2.3.1
 )

@@ -31,3 +31,8 @@ type Report struct {
 	GeneratedAt time.Time `json:"generatedAt" bson:"generatedAt"`
 	ReportData  string    `json:"reportData" bson:"reportData"`
 }
+
+type LoginResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}

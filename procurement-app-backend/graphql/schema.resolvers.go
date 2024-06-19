@@ -11,25 +11,11 @@ import (
 	"procurement-app-backend/models"
 	"time"
 
-	// "go.mongodb.org/mongo-driver/bson/primitive"
-
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-var collection *mongo.Collection
-
-// Initialize the collection
-func init() {
-	// Replace "your_database_name" and "your_collection_name" with your actual database and collection names
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	client, err := mongo.Connect(context.Background(), clientOptions)
-	if err != nil {
-		panic(err)
-	}
-	collection = client.Database("procurementdb").Collection("purchaseorders")
-}
 
 // CreatePurchaseOrder is the resolver for the createPurchaseOrder field.
 func (r *mutationResolver) CreatePurchaseOrder(ctx context.Context, userID string, items []*models.ItemInput) (*models.PurchaseOrder, error) {
@@ -76,19 +62,50 @@ func (r *mutationResolver) Register(ctx context.Context, name string, email stri
 }
 
 // Login is the resolver for the login field.
-func (r *mutationResolver) Login(ctx context.Context, email string, password string) (string, error) {
-	// panic(fmt.Errorf("not implemented: Login - login"))
-	return handlers.Login(ctx, email, password)
+func (r *mutationResolver) Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
+	response, err := handlers.Login(ctx, email, password)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
 // CreatedAt is the resolver for the createdAt field.
 func (r *purchaseOrderResolver) CreatedAt(ctx context.Context, obj *models.PurchaseOrder) (string, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	// panic(fmt.Errorf("not implemented: CreatedAt - createdAt"))
+	createdAtString := obj.CreatedAt.Format("2006-01-02T15:04:05Z07:00")
+
+	return createdAtString, nil
 }
 
 // GetPurchaseOrders is the resolver for the getPurchaseOrders field.
 func (r *queryResolver) GetPurchaseOrders(ctx context.Context) ([]*models.PurchaseOrder, error) {
-	panic(fmt.Errorf("not implemented: GetPurchaseOrders - getPurchaseOrders"))
+	// Define a slice to store the results
+	var purchaseOrders []*models.PurchaseOrder
+
+	// Find all documents in the collection
+	cursor, err := collection.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate over the cursor and decode each document into a PurchaseOrder struct
+	for cursor.Next(ctx) {
+		var po models.PurchaseOrder
+		if err := cursor.Decode(&po); err != nil {
+			return nil, err
+		}
+		purchaseOrders = append(purchaseOrders, &po)
+	}
+
+	// Check for any errors during cursor iteration
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	// Return the slice of PurchaseOrder structs
+	return purchaseOrders, nil
 }
 
 // GetReport is the resolver for the getReport field.
@@ -117,3 +134,27 @@ type mutationResolver struct{ *Resolver }
 type purchaseOrderResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type reportResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *loginResponseResolver) User(ctx context.Context, obj *models.LoginResponse) (*models.User, error) {
+	return &obj.User, nil
+}
+
+type loginResponseResolver struct{ *Resolver }
+
+var collection *mongo.Collection
+
+func init() {
+	// Replace "your_database_name" and "your_collection_name" with your actual database and collection names
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		panic(err)
+	}
+	collection = client.Database("procurementdb").Collection("purchaseorders")
+}

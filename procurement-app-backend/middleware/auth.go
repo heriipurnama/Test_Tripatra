@@ -23,7 +23,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// validate jwt token
+		// Validate JWT token
 		tokenStr := strings.Replace(header, "Bearer ", "", 1)
 		claims, err := utils.ParseToken(tokenStr)
 		if err != nil {
@@ -31,10 +31,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// put it in context
+		// Put it in context
 		ctx := context.WithValue(r.Context(), userCtxKey, claims)
 
-		// and call the next with our new context
+		// And call the next with our new context
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
