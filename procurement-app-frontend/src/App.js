@@ -8,25 +8,40 @@ import SignUp from './components/SignUp';
 import Dashboard from './components/Dashboard'; // Import Dashboard component
 import PurchaseOrderForm from './components/PurchaseOrderForm'; // Import PurchaseOrderForm component
 import ReportGenerator from './components/ReportGenerator'; // Import ReportGenerator component
+import { onError } from '@apollo/client/link/error'; 
+import LeftBar from './components/LeftBar'; // import LeftBar component
 
-// Apollo GraphQL client setup
 const httpLink = createHttpLink({
-  uri: 'http://127.0.0.1:8080/grapql', // GraphQL server URL
+  uri: 'http://localhost:8080/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
-  // Get token from localStorage
   const token = localStorage.getItem('token');
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : '', // Attach token to request headers
+      authorization: token ? `Bearer ${token}` : "",
     }
   }
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+    );
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+});
+
+// Gabungkan link dengan urutan: errorLink -> authLink -> httpLink
+const link = errorLink.concat(authLink).concat(httpLink);
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: link,  // Gunakan link gabungan
   cache: new InMemoryCache()
 });
 
@@ -47,6 +62,7 @@ const App = () => {
       <Router>
         <CssBaseline />
         <Container>
+        <LeftBar />
           <Routes>
             <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
             <Route path="/signup" element={<SignUp />} />
@@ -55,7 +71,7 @@ const App = () => {
               element={loggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/signin" />}
             />
             <Route
-              path="/create-order"
+              path="/purchase-order-form"
               element={loggedIn ? <PurchaseOrderForm /> : <Navigate to="/signin" />}
             />
             <Route

@@ -4,8 +4,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+import LeftBar from './LeftBar'; // Import the LeftBar component
 
-// GraphQL mutation for login
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -41,25 +41,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = ({ onLogin }) => {
-    const classes = useStyles();
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [login, { loading, error }] = useMutation(LOGIN_MUTATION);
-  
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-          const { data } = await login({ variables: { email, password } });
-          const token = typeof data.login === 'string' ? data.login : data.login.token;
-          localStorage.setItem('token', token);
-          onLogin();
-          navigate('/dashboard');
-        } catch (error) {
-          console.error("Login error", error);
-        }
-      };
-      
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [login, { loading }] = useMutation(LOGIN_MUTATION);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await login({ variables: { email, password } });
+      const { token, user } = data.login;
+
+      localStorage.setItem('token', token);
+      onLogin();
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrorMessage(error.message);
+    }
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -105,7 +108,7 @@ const SignIn = ({ onLogin }) => {
             className={classes.submit}
             disabled={loading}
           >
-             {loading ? 'Loading...' : 'Sign In'}
+            {loading ? 'Loading...' : 'Sign In'}
           </Button>
           <Grid container>
             <Grid item>
@@ -114,7 +117,7 @@ const SignIn = ({ onLogin }) => {
               </Link>
             </Grid>
           </Grid>
-          {error && <p style={{ color: 'red' }}>Login error: {error.message}</p>}
+          {errorMessage && <p style={{ color: 'red' }}>Login error: {errorMessage}</p>}
         </form>
       </div>
       <Box mt={8}>
