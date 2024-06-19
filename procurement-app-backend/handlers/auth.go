@@ -50,21 +50,31 @@ func Register(ctx context.Context, name string, email string, password string) (
 	return user, nil
 }
 
-func Login(ctx context.Context, email string, password string) (string, error) {
+func Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
 	var user models.User
 	err := userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if user.Password != hashPassword(password) {
-		return "", errors.New("invalid credentials")
+		return nil, errors.New("invalid credentials")
 	}
 
-	token, err := utils.GenerateJWT(user.UserID)
+	token, err := utils.GenerateToken(user.Email, user.Name, user.UserID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token, nil
+	response := &models.LoginResponse{
+		Token: token,
+		User: models.User{
+			UserID: user.UserID, // Assuming the user ID is an ObjectID
+			Name:   user.Name,
+			Email:  user.Email,
+			Role:   user.Role,
+		},
+	}
+
+	return response, nil
 }

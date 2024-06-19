@@ -27,6 +27,11 @@ type Report {
   reportData: String!
 }
 
+type LoginResponse {
+  token: String!
+  user: User!
+}
+
 type Query {
   getPurchaseOrders: [PurchaseOrder!]!
   getReport(orderId: ID!): Report!
@@ -36,7 +41,8 @@ type Mutation {
   createPurchaseOrder(userId: ID!, items: [ItemInput!]!): PurchaseOrder!
   generateReport(orderId: ID!): Report!
   register(name: String!, email: String!, password: String!): User!
-  login(email: String!, password: String!): String! # Returns JWT token
+  # login(email: String!, password: String!): String! # Returns JWT token
+  login(email: String!, password: String!): LoginResponse!
 }
 
 input ItemInput {
