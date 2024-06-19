@@ -25,3 +25,8 @@ A web application for managing purchase orders with email notifications and repo
 1. **Navigate to the frontend directory**:
    ```sh
    cd procurement-app-frontend
+
+
+### Presentasi
+
+https://onedrive.live.com/view.aspx?resid=330214574D3F2DC7%21156&authkey=!AJy5k9ukByslYu8
