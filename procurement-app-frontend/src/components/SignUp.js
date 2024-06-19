@@ -4,12 +4,16 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+// import MuiAlert from '@material-ui/lab/Alert';
 
 // GraphQL mutation for signup
 const SIGNUP_MUTATION = gql`
-  mutation Signup($email: String!, $password: String!, $name: String!) {
-    signup(email: $email, password: $password, name: $name) {
-      token
+  mutation Register($email: String!, $password: String!, $name: String!) {
+    register(email: $email, password: $password, name: $name) {
+      userId
+      name
+      email
+      role
     }
   }
 `;
@@ -34,22 +38,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// const Alert = (props) => {
+//   return <MuiAlert elevation={6} variant="filled" {...props} />;
+// };
+
 const SignUp = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [ setOpenSuccess] = useState(false); // Define openSuccess state
+  const [ setOpenError] = useState(false); // Define openError state
   const [signup] = useMutation(SIGNUP_MUTATION);
+
+  // const handleClose = () => { // Define handleClose function
+  //   setOpenSuccess(false);
+  //   setOpenError(false);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await signup({ variables: { email, password, name } });
-      localStorage.setItem('token', data.signup.token);
-      navigate('/dashboard');
+      navigate('/signin');
+      // localStorage.setItem('token', data.signup.token);
+      setOpenSuccess(true);
     } catch (error) {
       console.error("Signup error", error);
+      // setOpenError(true);  
     }
   };
 
@@ -125,8 +142,17 @@ const SignUp = () => {
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
-      </Box>
+      <Box mt={5}></Box>
+      {/* <Snackbar open={openSuccess} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Signup successful! Redirecting to login...
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openError} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Signup failed! Please try again.
+        </Alert>
+      </Snackbar> */}
     </Container>
   );
 };
